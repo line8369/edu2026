@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>똑똑한 AI, 올바른 마음!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Square+Round:wght@400;700;800&display=swap');
+        
+        body {
+            font-family: 'Nanum Square Round', sans-serif;
+            background-color: #FDFCF0;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .modal { display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
+        .modal.active { display: flex; }
+
+        /* Animation */
+        .animate-pop { animation: pop 0.3s ease-out; }
+        @keyframes pop {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 pb-20">
+
+    <!-- Infographic Modal -->
+    <div id="infoModal" class="modal p-4">
+        <div class="bg-white rounded-[40px] p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl border-8 border-yellow-400 animate-pop">
+            <button onclick="toggleModal(false)" class="absolute top-4 right-4 bg-slate-100 hover:bg-red-100 hover:text-red-500 p-2 rounded-full transition-colors z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-black text-yellow-600 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    AI 인포그래픽 살펴보기
+                </h2>
+            </div>
+            <div class="rounded-2xl overflow-hidden border-4 border-slate-100 bg-slate-50 min-h-[400px] flex items-center justify-center">
+                <img src="04.png" alt="AI 인포그래픽" class="max-w-full h-auto" onerror="this.parentElement.innerHTML='<div class=\'p-20 text-slate-400 font-bold\'>이미지(04.png)를 불러올 수 없어요!</div>'">
+            </div>
+            <p class="mt-6 text-center text-slate-500 font-bold">그림을 보며 인공지능의 편향성에 대해 다시 생각해보세요!</p>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-[#FFD93D] text-[#634E00] p-8 shadow-[0_8px_0_0_#E5C130] rounded-b-[40px] mb-8 relative overflow-hidden">
+        <div class="max-w-4xl mx-auto flex justify-start mb-4 relative z-20">
+            <a href="../index.html" class="flex items-center gap-2 bg-white/90 hover:bg-white px-5 py-2 rounded-full font-black text-sm text-[#634E00] shadow-md transition-all hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#634E00"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                홈으로 가기
+            </a>
+        </div>
+        <div class="absolute top-[-20px] left-[-20px] w-40 h-40 bg-white/20 rounded-full blur-3xl"></div>
+        <div class="max-w-4xl mx-auto relative z-10 text-center">
+            <h1 class="text-4xl font-black flex items-center justify-center gap-3 drop-shadow-sm">
+                ✨ 똑똑한 AI, 올바른 마음! ✨
+            </h1>
+            <p class="mt-3 text-lg font-bold opacity-80">인공지능 친구의 비밀을 함께 파헤쳐 볼까요? 🕵️‍♂️</p>
+        </div>
+    </header>
+
+    <!-- Nav -->
+    <nav class="max-w-4xl mx-auto px-4 mb-8">
+        <div class="flex gap-4 p-2 bg-white rounded-[30px] shadow-xl" id="tabNav">
+            <button onclick="showTab('bias')" id="btn-bias" class="tab-btn flex-1 py-4 px-2 flex flex-col items-center justify-center gap-1 font-black rounded-[25px] transition-all bg-yellow-400 text-white shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .52 8.105 4 4 0 0 0 8 0 4 4 0 0 0 .52-8.105 4 4 0 0 0-2.527-5.77A3 3 0 0 0 12 5z"/><path d="M9 13a4.5 4.5 0 0 0 3-4"/><path d="M6.003 5.125A3 3 0 1 0 12 5"/></svg>
+                <span class="text-sm">AI의 마음</span>
+            </button>
+            <button onclick="showTab('dilemma')" id="btn-dilemma" class="tab-btn flex-1 py-4 px-2 flex flex-col items-center justify-center gap-1 font-black rounded-[25px] transition-all text-slate-400 hover:bg-slate-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
+                <span class="text-sm">선택의 갈림길</span>
+            </button>
+            <button onclick="showTab('quiz')" id="btn-quiz" class="tab-btn flex-1 py-4 px-2 flex flex-col items-center justify-center gap-1 font-black rounded-[25px] transition-all text-slate-400 hover:bg-slate-50">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" x2="10" y1="12" y2="12"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="15" x2="15.01" y1="13" y2="13"/><line x1="18" x2="18.01" y1="11" y2="11"/><rect width="20" height="12" x="2" y="6" rx="2"/></svg>
+                <span class="text-sm">퀴즈 놀이</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="max-w-4xl mx-auto px-6">
+        <!-- Tab 1: Bias -->
+        <div id="bias" class="tab-content active space-y-8 animate-pop">
+            <div class="flex justify-center mb-4">
+                <button onclick="toggleModal(true)" class="bg-white border-4 border-yellow-400 px-8 py-4 rounded-[30px] font-black text-yellow-600 hover:bg-yellow-50 hover:scale-105 transition-all shadow-lg flex items-center gap-3">
+                    🖼️ 인포그래픽 보기
+                </button>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <section class="bg-white p-8 rounded-[40px] shadow-[0_10px_0_0_#F1F5F9] border-2 border-slate-100">
+                    <h3 class="text-2xl font-black mb-6 text-yellow-500">💡 AI는 왜 편견을 가질까요?</h3>
+                    <div class="space-y-4">
+                        <div class="p-5 bg-yellow-50 rounded-[30px] border-2 border-yellow-200">
+                            <h4 class="font-black text-yellow-700 text-lg">📚 공부 재료가 부족해요!</h4>
+                            <p class="text-sm text-yellow-800/80 mt-2 font-medium">특정 데이터가 부족하면 AI는 엉뚱한 판단을 내릴 수 있어요.</p>
+                        </div>
+                        <div class="p-5 bg-blue-50 rounded-[30px] border-2 border-blue-200">
+                            <h4 class="font-black text-blue-700 text-lg">⚙️ 규칙이 이상해요!</h4>
+                            <p class="text-sm text-blue-800/80 mt-2 font-medium">사람이 만든 규칙 속에 나쁜 고정관념이 있으면 AI도 배워요.</p>
+                        </div>
+                    </div>
+                </section>
+                <section class="bg-white p-8 rounded-[40px] shadow-[0_10px_0_0_#F1F5F9] border-2 border-slate-100">
+                    <h3 class="text-2xl font-black mb-6 text-sky-500">👥 사람 vs 인공지능</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-4 p-3 bg-slate-50 rounded-2xl">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm">👤</div>
+                            <div class="flex-1 text-sm font-bold">사람은 경험과 교육으로 배워요!</div>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 bg-sky-50 rounded-2xl">
+                            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-sky-500">🤖</div>
+                            <div class="flex-1 text-sm font-bold text-sky-700">AI는 데이터와 알고리즘으로 배워요!</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Tab 2: Dilemma -->
+        <div id="dilemma" class="tab-content space-y-8 animate-pop">
+            <section class="bg-white p-10 rounded-[50px] shadow-[0_10px_0_0_#F1F5F9] border-2 border-slate-100 text-center">
+                <div class="inline-block bg-pink-100 text-pink-600 px-6 py-2 rounded-full font-black mb-4">🚗 자율주행차 게임</div>
+                <h3 class="text-3xl font-black mb-6">위험한 상황! 당신의 선택은?</h3>
+                <div class="p-8 bg-slate-800 rounded-[40px] text-white mb-8 border-8 border-slate-700">
+                    <p class="text-xl mb-8 font-bold">5명을 위해 핸들을 꺾을까요, 아니면 1명을 위해 직진할까요?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button onclick="selectDilemma('A')" class="dilemma-btn p-6 rounded-[30px] border-4 border-slate-600 bg-slate-700 hover:bg-slate-600 font-black">핸들을 꺾는다!</button>
+                        <button onclick="selectDilemma('B')" class="dilemma-btn p-6 rounded-[30px] border-4 border-slate-600 bg-slate-700 hover:bg-slate-600 font-black">그대로 직진한다!</button>
+                    </div>
+                    <div id="dilemmaResult" class="hidden mt-8 p-6 bg-white/10 rounded-[30px] border-2 border-white/20">
+                        <h4 class="font-black text-yellow-300 mb-2">❤️ 사람들의 생각은 어떨까요?</h4>
+                        <p class="text-sm font-medium">대부분의 사람들은 핸들을 꺾는 게 맞다고 생각했어요. 정답이 없는 어려운 문제랍니다!</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Tab 3: Quiz -->
+        <div id="quiz" class="tab-content animate-pop">
+            <div id="quizContainer" class="bg-white p-10 rounded-[50px] shadow-[0_12px_0_0_#F1F5F9] border-4 border-sky-100">
+                <!-- Quiz content will be injected by JS -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // State
+        let currentTab = 'bias';
+        let quizStep = 0;
+        let score = 0;
+
+        const quizData = [
+            {
+                question: "AI가 특정 사람들의 데이터만 많이 공부해서 생기는 '치우친 생각'을 무엇이라고 할까요?",
+                options: ["학습 데이터 편향", "로봇 고장", "인터넷 속도 저하", "컴퓨터 배터리 부족"],
+                answer: 0,
+                explanation: "공부하는 책(데이터)이 한쪽 이야기만 담고 있으면 AI도 편향된 생각을 갖게 돼요!"
+            },
+            {
+                question: "AI는 사람처럼 스스로 '착한 일'과 '나쁜 일'을 감정으로 구분할 수 있을까요?",
+                options: ["네, 마음이 있어요!", "아니요, 시키는 대로만 해요.", "가끔씩 기분이 좋아져요.", "잠잘 때만 가능해요."],
+                answer: 1,
+                explanation: "AI는 감정이 없어요. 오직 사람이 짜놓은 규칙에 따라서만 움직인답니다."
+            },
+            {
+                question: "자율주행 자동차가 사고가 날 것 같은 상황에서 누구를 구할지 결정하기 힘든 상황을 무엇이라 할까요?",
+                options: ["신호등 고장", "주차 전쟁", "트롤리 딜레마", "타이어 펑크"],
+                answer: 2,
+                explanation: "모두를 구할 수 없는 슬픈 상황에서 어려운 선택을 해야 하는 것을 말해요."
+            }
+        ];
+
+        // Functions
+        function toggleModal(show) {
+            document.getElementById('infoModal').classList.toggle('active', show);
+        }
+
+        function showTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            // Update Nav Styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn flex-1 py-4 px-2 flex flex-col items-center justify-center gap-1 font-black rounded-[25px] transition-all text-slate-400 hover:bg-slate-50";
+            });
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            const colors = { bias: 'bg-yellow-400', dilemma: 'bg-pink-400', quiz: 'bg-sky-400' };
+            activeBtn.className = `tab-btn flex-1 py-4 px-2 flex flex-col items-center justify-center gap-1 font-black rounded-[25px] transition-all ${colors[tabId]} text-white shadow-lg scale-105`;
+
+            if(tabId === 'quiz') renderQuiz();
+        }
+
+        function selectDilemma(choice) {
+            document.querySelectorAll('.dilemma-btn').forEach(btn => btn.classList.remove('bg-pink-500', 'border-white'));
+            event.target.classList.add('bg-pink-500', 'border-white');
+            document.getElementById('dilemmaResult').classList.remove('hidden');
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quizContainer');
+            if (quizStep < quizData.length) {
+                const q = quizData[quizStep];
+                container.innerHTML = `
+                    <div class="flex justify-between items-center mb-8">
+                        <span class="bg-sky-500 text-white px-4 py-1 rounded-full font-black text-sm">도전! ${quizStep + 1}번 문제</span>
+                    </div>
+                    <h3 class="text-2xl font-black mb-10 text-center">${q.question}</h3>
+                    <div class="space-y-4">
+                        ${q.options.map((opt, i) => `
+                            <button onclick="handleAnswer(${i})" class="w-full text-left p-6 rounded-[30px] border-4 border-slate-50 bg-slate-50 hover:border-sky-400 hover:bg-sky-50 transition-all font-black text-lg flex items-center gap-4 shadow-sm">
+                                <span class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-sky-500 shadow-inner">${i+1}</span>
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                renderResult();
+            }
+        }
+
+        function handleAnswer(index) {
+            if (index === quizData[quizStep].answer) score++;
+            quizStep++;
+            renderQuiz();
+        }
+
+        function renderResult() {
+            const container = document.getElementById('quizContainer');
+            container.innerHTML = `
+                <div class="text-center">
+                    <div class="text-6xl mb-6">✨</div>
+                    <h3 class="text-4xl font-black mb-4">참 잘했어요!</h3>
+                    <p class="text-2xl font-bold text-slate-500 mb-10">총 <span class="text-sky-500">${score}개</span> 정답!</p>
+                    <button onclick="resetQuiz()" class="bg-[#FFD93D] text-[#634E00] px-12 py-5 rounded-[30px] font-black text-xl shadow-[0_8px_0_0_#E5C130] hover:scale-105">다시 하기 🔄</button>
+                </div>
+            `;
+        }
+
+        function resetQuiz() {
+            quizStep = 0;
+            score = 0;
+            renderQuiz();
+        }
+
+        // Init
+        window.onload = () => {
+            showTab('bias');
+        };
+    </script>
+</body>
+</html>
