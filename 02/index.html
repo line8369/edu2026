@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수학의 거인들 - 인터렉티브 수업</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .math-card {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dot-active {
+            width: 3rem;
+            background-color: #4f46e5;
+        }
+
+        .fade-enter {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quiz-option {
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:hover:not(:disabled) {
+            border-color: #6366f1;
+            background-color: #f5f3ff;
+        }
+
+        .hidden-section {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2 cursor-pointer group" onclick="showPage('home')">
+            <div class="p-2 bg-indigo-600 rounded-lg text-white group-hover:rotate-12 transition-transform">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2.1a10 10 0 1 0 5 17.9V12l-5 5-1.4-1.4 5-5V2.1Z"/><path d="M14.5 12.5V2.1c2.8.7 5 3 5.7 5.8L14.5 12.5Z"/></svg>
+            </div>
+            <span class="font-bold text-xl tracking-tight">수학의 거인들</span>
+        </div>
+        <div class="flex gap-4 items-center">
+            <div class="bg-slate-100 rounded-full px-4 py-1 text-sm font-medium text-slate-600">
+                학습 점수: <span id="score-display">0</span>pt
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12 px-4 max-w-5xl mx-auto">
+        
+        <!-- Home Page -->
+        <section id="home-page" class="flex flex-col items-center text-center space-y-8 fade-enter">
+            <div class="mt-12 space-y-4">
+                <h1 class="text-4xl md:text-6xl font-black text-slate-800">
+                    수학은 지루하다고요?<br />
+                    <span class="text-indigo-600">역사를 바꾼 천재들</span>을 만나보세요!
+                </h1>
+                <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                    세상을 다르게 바라본 세 명의 수학자 이야기를 통해 <br class="hidden md:block" />
+                    우리 주변에 숨겨진 수학의 비밀을 파헤쳐 봅시다.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-10" id="home-cards-container">
+                <!-- Cards will be injected by JS -->
+            </div>
+
+            <button onclick="startLesson()" class="mt-12 px-8 py-4 bg-indigo-600 text-white rounded-full font-bold text-lg hover:bg-indigo-700 shadow-lg hover:shadow-indigo-200 transition-all flex items-center gap-2">
+                수업 시작하기 
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+        </section>
+
+        <!-- Detail Page -->
+        <section id="detail-page" class="hidden-section fade-enter">
+            <div class="flex justify-between items-center mb-6">
+                <button onclick="showPage('home')" class="flex items-center gap-1 text-slate-500 hover:text-indigo-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    처음으로
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="prevMath()" class="p-2 rounded-full bg-white border hover:bg-slate-50 shadow-sm transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    </button>
+                    <button onclick="nextMath()" class="p-2 rounded-full bg-white border hover:bg-slate-50 shadow-sm transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div id="math-content-container">
+                <!-- Data will be injected here -->
+            </div>
+
+            <!-- Pagination Dots -->
+            <div class="mt-10 flex justify-center gap-3" id="pagination-dots">
+                <!-- Dots injected here -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="mt-12 py-10 border-t border-slate-200 text-center text-slate-400 text-sm">
+        <p>© 2025 수학의 거인들 - 인터렉티브 수학 수업 자료 (Vanilla JS Ver.)</p>
+    </footer>
+
+    <script>
+        const mathematicians = [
+            {
+                id: 'archimedes',
+                name: '아르키메데스',
+                period: '기원전 287년 ~ 212년',
+                title: '고대의 공학 천재',
+                color: 'bg-orange-100',
+                accent: 'text-orange-600',
+                borderColor: 'border-orange-200',
+                emoji: '⚖️',
+                description: '수학뿐만 아니라 물리, 공학에서도 시대를 앞서간 천재입니다. "유레카!"라는 외침으로도 유명하죠.',
+                achievements: [
+                    { title: '원주율(π)의 계산', detail: '다각형을 이용해 π의 값을 매우 정확하게 추산했습니다.' },
+                    { title: '부력의 원리', detail: '왕관의 순금 여부를 가려내며 부력의 원리를 발견했습니다.' },
+                    { title: '지레의 원리', detail: '"내게 긴 지렛대와 지탱할 장소만 준다면 지구도 움직이겠다"고 말했죠.' }
+                ],
+                interactive: {
+                    question: "아르키메데스가 목욕탕에서 뛰쳐나오며 외친 말은?",
+                    options: ["알겠다!", "찾았다(유레카)!", "정답이다!", "성공이다!"],
+                    answer: 1
+                }
+            },
+            {
+                id: 'gauss',
+                name: '카를 가우스',
+                period: '1777년 ~ 1855년',
+                title: '수학의 왕',
+                color: 'bg-blue-100',
+                accent: 'text-blue-600',
+                borderColor: 'border-blue-200',
+                emoji: '👑',
+                description: '독일의 수학자로, 어린 시절부터 천재성을 발휘했습니다. 수론, 통계학, 해석학 등 수학의 모든 분야에 발자취를 남겼습니다.',
+                achievements: [
+                    { title: '1부터 100까지의 합', detail: '초등학생 때 등차수열의 합 공식을 스스로 깨우쳐 순식간에 계산했습니다.' },
+                    { title: '정17각형 작도', detail: '2,000년 넘게 해결되지 않은 문제를 수학적으로 해결했습니다.' },
+                    { title: '가우스 분포', detail: '통계학에서 가장 중요한 정규분포 곡선을 정립했습니다.' }
+                ],
+                interactive: {
+                    question: "가우스가 초등학생 때 1부터 100까지 더해서 얻은 값은?",
+                    options: ["5000", "5010", "5050", "5100"],
+                    answer: 2
+                }
+            },
+            {
+                id: 'euler',
+                name: '레온하르트 오일러',
+                period: '1707년 ~ 1783년',
+                title: '가장 다작한 수학자',
+                color: 'bg-purple-100',
+                accent: 'text-purple-600',
+                borderColor: 'border-purple-200',
+                emoji: '📐',
+                description: '스위스의 수학자로, 현대 수학 기호(f(x), e, i 등)의 대부분을 정리했습니다. 시력을 잃은 후에도 집념으로 연구를 계속했습니다.',
+                achievements: [
+                    { title: '오일러의 공식', detail: 'e^(iπ) + 1 = 0 이라는 세상에서 가장 아름다운 수식을 만들었습니다.' },
+                    { title: '그래프 이론', detail: '쾨니히스베르크의 다리 건너기 문제를 통해 그래프 이론의 시초를 열었습니다.' },
+                    { title: '수학 기호의 표준화', detail: '삼각형의 변(a,b,c)이나 원주율(π) 등의 사용을 대중화했습니다.' }
+                ],
+                interactive: {
+                    question: "오일러가 창시한, 점과 선으로 연결된 구조를 연구하는 학문은?",
+                    options: ["기하학", "미적분학", "그래프 이론", "통계학"],
+                    answer: 2
+                }
+            }
+        ];
+
+        let state = {
+            currentPage: 'home',
+            currentIndex: 0,
+            score: 0,
+            answeredQuestions: new Set() // Store indexes of answered math questions
+        };
+
+        function init() {
+            renderHomeCards();
+            updateScoreDisplay();
+        }
+
+        function renderHomeCards() {
+            const container = document.getElementById('home-cards-container');
+            container.innerHTML = mathematicians.map((m, idx) => `
+                <div onclick="goToDetail(${idx})" class="${m.color} p-8 rounded-3xl cursor-pointer hover:scale-105 transition-all shadow-sm hover:shadow-xl border-2 ${m.borderColor} flex flex-col items-center group">
+                    <div class="p-4 rounded-full bg-white mb-4 ${m.accent} group-hover:rotate-12 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                    </div>
+                    <h3 class="font-bold text-xl mb-1">${m.name}</h3>
+                    <p class="text-sm opacity-70 font-medium">${m.title}</p>
+                </div>
+            `).join('');
+        }
+
+        function showPage(pageName) {
+            state.currentPage = pageName;
+            const home = document.getElementById('home-page');
+            const detail = document.getElementById('detail-page');
+
+            if (pageName === 'home') {
+                home.classList.remove('hidden-section');
+                detail.classList.add('hidden-section');
+            } else {
+                home.classList.add('hidden-section');
+                detail.classList.remove('hidden-section');
+                renderDetail();
+            }
+        }
+
+        function goToDetail(index) {
+            state.currentIndex = index;
+            showPage('detail');
+        }
+
+        function startLesson() {
+            state.currentIndex = 0;
+            showPage('detail');
+        }
+
+        function nextMath() {
+            state.currentIndex = (state.currentIndex + 1) % mathematicians.length;
+            renderDetail();
+        }
+
+        function prevMath() {
+            state.currentIndex = (state.currentIndex - 1 + mathematicians.length) % mathematicians.length;
+            renderDetail();
+        }
+
+        function renderDetail() {
+            const math = mathematicians[state.currentIndex];
+            const container = document.getElementById('math-content-container');
+            
+            // Build achievements HTML
+            const achievementsHtml = math.achievements.map((item, i) => `
+                <div class="flex gap-4">
+                    <div class="mt-1 flex-shrink-0 w-8 h-8 rounded-full ${math.color} ${math.accent} flex items-center justify-center font-bold">
+                        ${i + 1}
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">${item.title}</h4>
+                        <p class="text-slate-600">${item.detail}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Build Quiz HTML
+            const quizKey = `quiz-${state.currentIndex}`;
+            const quizHtml = `
+                <div class="bg-slate-50 rounded-3xl p-8 border border-slate-100 flex flex-col h-full">
+                    <div class="flex items-center gap-2 mb-4 text-indigo-600 font-bold">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg> 돌발 퀴즈!
+                    </div>
+                    <p class="text-lg font-bold text-slate-800 mb-6">${math.interactive.question}</p>
+                    <div class="space-y-3" id="quiz-options-container">
+                        ${math.interactive.options.map((opt, i) => `
+                            <button onclick="handleQuizChoice(${i})" 
+                                class="quiz-option w-full text-left p-4 rounded-xl border-2 border-slate-200 bg-white font-medium"
+                                id="opt-${i}">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="quiz-feedback" class="mt-4 hidden"></div>
+                </div>
+            `;
+
+            container.innerHTML = `
+                <div class="rounded-[2.5rem] overflow-hidden bg-white shadow-2xl border ${math.borderColor} animate__animated animate__fadeIn">
+                    <div class="${math.color} p-10 flex flex-col md:flex-row items-center gap-10">
+                        <div class="flex-1 space-y-4">
+                            <span class="inline-block px-4 py-1 rounded-full bg-white/60 ${math.accent} font-bold text-sm">
+                                ${math.period}
+                            </span>
+                            <h2 class="text-5xl font-black text-slate-800">${math.name}</h2>
+                            <p class="text-2xl font-semibold text-slate-600 italic">"${math.title}"</p>
+                            <p class="text-lg leading-relaxed text-slate-700 pt-4">${math.description}</p>
+                        </div>
+                        <div class="w-64 h-64 bg-white rounded-full shadow-inner flex items-center justify-center relative overflow-hidden">
+                            <div class="text-8xl transform hover:scale-110 transition-transform cursor-default">
+                                ${math.emoji}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-10 grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div>
+                            <h3 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+                                핵심 업적 3가지
+                            </h3>
+                            <div class="space-y-6">${achievementsHtml}</div>
+                        </div>
+                        <div>${quizHtml}</div>
+                    </div>
+                </div>
+            `;
+
+            renderDots();
+        }
+
+        function renderDots() {
+            const container = document.getElementById('pagination-dots');
+            container.innerHTML = mathematicians.map((_, idx) => `
+                <div class="h-2 rounded-full transition-all duration-300 ${state.currentIndex === idx ? 'dot-active' : 'w-2 bg-slate-300 cursor-pointer'}" 
+                     onclick="goToDetail(${idx})"></div>
+            `).join('');
+        }
+
+        function handleQuizChoice(choiceIndex) {
+            if (state.answeredQuestions.has(state.currentIndex)) return;
+
+            const math = mathematicians[state.currentIndex];
+            const isCorrect = choiceIndex === math.interactive.answer;
+            const feedback = document.getElementById('quiz-feedback');
+            const optionsContainer = document.getElementById('quiz-options-container');
+            const buttons = optionsContainer.getElementsByTagName('button');
+
+            // Disable all buttons
+            for (let btn of buttons) {
+                btn.disabled = true;
+            }
+
+            // Mark correct/incorrect
+            const selectedBtn = document.getElementById(`opt-${choiceIndex}`);
+            if (isCorrect) {
+                selectedBtn.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+                selectedBtn.innerHTML += ' <span class="float-right">✅ 정답!</span>';
+                state.score += 10;
+                updateScoreDisplay();
+            } else {
+                selectedBtn.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
+                selectedBtn.innerHTML += ' <span class="float-right">❌ 오답</span>';
+                // Show correct one too
+                const correctBtn = document.getElementById(`opt-${math.interactive.answer}`);
+                correctBtn.classList.add('bg-green-50', 'border-green-300', 'text-green-600');
+            }
+
+            feedback.classList.remove('hidden');
+            feedback.className = `mt-4 p-4 rounded-xl text-sm animate__animated animate__fadeInUp ${isCorrect ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`;
+            feedback.innerHTML = isCorrect 
+                ? "훌륭해요! 수학자들의 이야기를 잘 이해하고 있군요." 
+                : "아쉬워요! 수학자의 업적을 다시 한번 살펴볼까요?";
+
+            state.answeredQuestions.add(state.currentIndex);
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score-display').innerText = state.score;
+        }
+
+        // Initialize on load
+        window.onload = init;
+    </script>
+</body>
+</html>
