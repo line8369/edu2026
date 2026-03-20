@@ -1,0 +1,274 @@
+import React, { useState, useEffect } from 'react';
+import { BookOpen, Award, ChevronRight, RefreshCw, Star, Info, Home } from 'lucide-react';
+
+const App = () => {
+  const [activeTab, setActiveTab] = useState('home');
+  const [score, setScore] = useState(0);
+
+  // --- Archimedes Quiz State ---
+  const [archInput, setArchInput] = useState({ radius: 3 });
+  const [archResult, setArchResult] = useState(null);
+
+  // --- Euler Quiz State ---
+  const [eulerQuiz, setEulerQuiz] = useState({
+    shape: '정육면체',
+    v: 8,
+    e: 12,
+    f: 0, // Empty for user to solve
+    answer: 6
+  });
+  const [eulerFeedback, setEulerFeedback] = useState('');
+
+  const checkEuler = () => {
+    if (parseInt(eulerQuiz.f) === eulerQuiz.answer) {
+      setEulerFeedback('정답입니다! V - E + F = 2 가 성립하네요!');
+      setScore(s => s + 10);
+    } else {
+      setEulerFeedback('다시 한번 계산해보세요. (꼭짓점 - 모서리 + 면 = 2)');
+    }
+  };
+
+  const renderHome = () => (
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-8 rounded-2xl shadow-lg">
+        <h1 className="text-3xl font-bold mb-2">수학의 거인들을 만나다</h1>
+        <p className="text-blue-100">아르키메데스와 오일러의 놀라운 발견을 탐험하고 직접 문제를 풀어보세요.</p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div 
+          onClick={() => setActiveTab('archimedes')}
+          className="group cursor-pointer bg-white p-6 rounded-2xl border-2 border-transparent hover:border-blue-500 shadow-sm transition-all"
+        >
+          <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <Star size={24} />
+          </div>
+          <h2 className="text-xl font-bold mb-2 text-slate-800">아르키메데스</h2>
+          <p className="text-slate-600 mb-4">"유레카!" 밀도와 부피, 그리고 구의 신비를 밝혀낸 고대 그리스의 천재.</p>
+          <div className="flex items-center text-blue-600 font-medium">
+            탐험하기 <ChevronRight size={20} />
+          </div>
+        </div>
+
+        <div 
+          onClick={() => setActiveTab('euler')}
+          className="group cursor-pointer bg-white p-6 rounded-2xl border-2 border-transparent hover:border-indigo-500 shadow-sm transition-all"
+        >
+          <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <BookOpen size={24} />
+          </div>
+          <h2 className="text-xl font-bold mb-2 text-slate-800">레온하르트 오일러</h2>
+          <p className="text-slate-600 mb-4">가장 많은 논문을 쓴 수학자. 입체도형의 규칙을 한 줄의 공식으로 정리했습니다.</p>
+          <div className="flex items-center text-indigo-600 font-medium">
+            탐험하기 <ChevronRight size={20} />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
+        <div className="flex items-center gap-2 text-amber-800 font-bold mb-1">
+          <Info size={18} /> 오늘의 수학 상식
+        </div>
+        <p className="text-amber-700 text-sm">아르키메데스는 자신의 묘비에 '원기둥에 내접하는 구'를 새겨달라고 할 정도로 이 발견을 사랑했답니다.</p>
+      </div>
+    </div>
+  );
+
+  const renderArchimedes = () => (
+    <div className="space-y-6 animate-in slide-in-from-right duration-500">
+      <button onClick={() => setActiveTab('home')} className="text-slate-500 hover:text-slate-800 flex items-center gap-1">
+        ← 돌아가기
+      </button>
+      
+      <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+        <h2 className="text-2xl font-bold text-blue-600 mb-4">아르키메데스와 구의 신비</h2>
+        <div className="bg-blue-50 p-4 rounded-xl mb-6">
+          <p className="text-slate-700 leading-relaxed">
+            아르키메데스는 구의 부피가 그 구가 꼭 들어맞는 원기둥 부피의 <b>3분의 2</b>라는 것을 발견했습니다.<br/>
+            또한, 구의 겉넓이는 그 구의 대원(가장 큰 원) 넓이의 <b>4배</b>와 같다는 사실도 증명했죠!
+          </p>
+        </div>
+
+        <div className="space-y-8">
+          <div className="p-6 bg-slate-50 rounded-xl border border-slate-200">
+            <h3 className="text-lg font-bold mb-4">직접 계산해보기: 반지름이 $r$인 구</h3>
+            <div className="flex items-center gap-4 mb-6">
+              <label className="text-sm font-medium">반지름($r$):</label>
+              <input 
+                type="number" 
+                value={archInput.radius}
+                onChange={(e) => setArchInput({ radius: e.target.value })}
+                className="w-24 p-2 border rounded-md"
+              />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <p className="text-sm text-slate-500 mb-1">구의 겉넓이 ($4 \pi r^2$)</p>
+                <p className="text-2xl font-mono font-bold text-blue-600">
+                  {4 * archInput.radius * archInput.radius} $\pi$
+                </p>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <p className="text-sm text-slate-500 mb-1">구의 부피 ($\frac{4}{3} \pi r^3$)</p>
+                <p className="text-2xl font-mono font-bold text-indigo-600">
+                  {((4/3) * Math.pow(archInput.radius, 3)).toFixed(1)} $\pi$
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-amber-100 p-6 rounded-xl border-2 border-amber-300">
+            <h3 className="text-lg font-bold text-amber-900 mb-2">도전 퀴즈!</h3>
+            <p className="mb-4">반지름이 3인 구의 겉넓이는 얼마일까요? (단위 제외, $\pi$ 앞의 숫자만)</p>
+            <div className="flex gap-2">
+              <input 
+                type="number" 
+                placeholder="답 입력" 
+                className="p-2 border rounded-md"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    if (e.target.value === '36') {
+                      alert('정답입니다! 4 × 3² = 36');
+                      setScore(s => s + 20);
+                    } else {
+                      alert('다시 계산해 보세요!');
+                    }
+                  }
+                }}
+              />
+              <button className="bg-amber-500 text-white px-4 py-2 rounded-md hover:bg-amber-600 transition-colors">확인</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderEuler = () => (
+    <div className="space-y-6 animate-in slide-in-from-right duration-500">
+      <button onClick={() => setActiveTab('home')} className="text-slate-500 hover:text-slate-800 flex items-center gap-1">
+        ← 돌아가기
+      </button>
+
+      <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+        <h2 className="text-2xl font-bold text-indigo-600 mb-4">오일러의 다면체 정리</h2>
+        <div className="bg-indigo-50 p-4 rounded-xl mb-6">
+          <p className="text-slate-700 leading-relaxed text-lg text-center">
+            모든 볼록 다면체에서 다음 식은 항상 <b>2</b>가 됩니다: <br/>
+            <span className="text-2xl font-bold text-indigo-700">V (꼭짓점) - E (모서리) + F (면) = 2</span>
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold flex items-center gap-2">
+              <RefreshCw size={20} className="text-indigo-500" /> 빈칸 채우기 게임
+            </h3>
+            <div className="p-6 bg-slate-50 rounded-xl space-y-4 border border-slate-200">
+              <p className="font-medium text-slate-800">입체도형: {eulerQuiz.shape}</p>
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between items-center text-sm">
+                  <span>꼭짓점 (V):</span>
+                  <span className="font-bold">{eulerQuiz.v}개</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span>모서리 (E):</span>
+                  <span className="font-bold">{eulerQuiz.e}개</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span>면 (F):</span>
+                  <input 
+                    type="number"
+                    className="w-20 p-1 border rounded"
+                    value={eulerQuiz.f || ''}
+                    onChange={(e) => setEulerQuiz({...eulerQuiz, f: e.target.value})}
+                  />
+                </div>
+              </div>
+              <button 
+                onClick={checkEuler}
+                className="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold hover:bg-indigo-700 transition-colors"
+              >
+                공식 검증하기
+              </button>
+              {eulerFeedback && (
+                <p className={`text-center text-sm font-bold ${eulerFeedback.includes('정답') ? 'text-green-600' : 'text-red-500'}`}>
+                  {eulerFeedback}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 h-full flex flex-col justify-center">
+             <h4 className="font-bold mb-4 text-center text-slate-600">입체도형 도우미</h4>
+             <div className="grid grid-cols-2 gap-2">
+                <button 
+                  onClick={() => {
+                    setEulerQuiz({ shape: '정사면체', v: 4, e: 6, answer: 4, f: 0 });
+                    setEulerFeedback('');
+                  }}
+                  className="p-2 text-xs bg-white border rounded hover:bg-indigo-50 transition-colors"
+                >
+                  정사면체 불러오기
+                </button>
+                <button 
+                  onClick={() => {
+                    setEulerQuiz({ shape: '정팔면체', v: 6, e: 12, answer: 8, f: 0 });
+                    setEulerFeedback('');
+                  }}
+                  className="p-2 text-xs bg-white border rounded hover:bg-indigo-50 transition-colors"
+                >
+                  정팔면체 불러오기
+                </button>
+             </div>
+             <p className="mt-4 text-xs text-slate-500 text-center italic">
+               팁: 면의 개수를 모를 때 'V - E + F = 2' 식을 사용해 보세요!
+             </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans p-4 md:p-8">
+      <div className="max-w-4xl mx-auto">
+        <header className="flex justify-between items-center mb-8">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setActiveTab('home')}>
+            <div className="bg-blue-600 p-2 rounded-lg">
+              <BookOpen className="text-white" />
+            </div>
+            <span className="text-xl font-black tracking-tight">MATH LEGENDS</span>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <a 
+              href="../index.html" 
+              className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 transition-all font-medium"
+            >
+              <Home size={18} />
+              <span>홈으로 이동하기</span>
+            </a>
+            <div className="bg-white px-4 py-2 rounded-full shadow-sm border border-slate-200 flex items-center gap-2">
+              <Award className="text-amber-500" size={20} />
+              <span className="font-bold text-slate-700">{score} Points</span>
+            </div>
+          </div>
+        </header>
+
+        <main>
+          {activeTab === 'home' && renderHome()}
+          {activeTab === 'archimedes' && renderArchimedes()}
+          {activeTab === 'euler' && renderEuler()}
+        </main>
+
+        <footer className="mt-16 pt-8 border-t border-slate-200 text-center text-slate-400 text-sm">
+          <p>© 2024 Math Interactive Learning - For Middle School Students</p>
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+export default App;
